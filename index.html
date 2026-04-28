@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WebDev Topics</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f0e8;
+      --surface: #ede8df;
+      --card: #ffffff;
+      --border: #d9d2c5;
+      --border-dark: #b8b0a0;
+
+      --accent-html: #c0392b;
+      --accent-css:  #1565c0;
+      --accent-bs:   #4a148c;
+      --accent-js:   #e65100;
+
+      --accent-html-light: #fdecea;
+      --accent-css-light:  #e3f2fd;
+      --accent-bs-light:   #f3e5f5;
+      --accent-js-light:   #fff3e0;
+
+      --text: #1a1612;
+      --muted: #7a7060;
+      --mono: 'DM Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --sans: 'Outfit', sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── GRAIN TEXTURE ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.5rem;
+      height: 60px;
+      background: var(--text);
+      border-bottom: 3px solid var(--text);
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-size: 1.6rem;
+      letter-spacing: .1em;
+      color: var(--bg);
+    }
+    .logo em { font-style: normal; color: var(--accent-js); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0;
+      list-style: none;
+      height: 100%;
+    }
+
+    .nav-tabs li a {
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: .12em;
+      padding: 0 1.1rem;
+      display: flex;
+      align-items: center;
+      height: 100%;
+      color: rgba(255,255,255,.45);
+      border-right: 1px solid rgba(255,255,255,.08);
+      transition: all .2s;
+      position: relative;
+    }
+
+    .nav-tabs li a::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: transparent;
+      transition: background .2s;
+    }
+
+    .nav-tabs li a:hover, .nav-tabs li a.active {
+      color: #fff;
+    }
+    .nav-tabs li a.active::after,
+    .nav-tabs li a[data-tab="html"]:hover::after { background: var(--accent-html); }
+    .nav-tabs li a[data-tab="css"]:hover::after  { background: var(--accent-css); }
+    .nav-tabs li a[data-tab="bs"]:hover::after   { background: var(--accent-bs); }
+    .nav-tabs li a[data-tab="js"]:hover::after   { background: var(--accent-js); }
+    .nav-tabs li a[data-tab="all"]:hover::after  { background: var(--bg); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      padding: 5rem 3rem 4rem;
+      overflow: hidden;
+      border-bottom: 2px solid var(--border-dark);
+    }
+
+    .hero-bg-text {
+      position: absolute;
+      top: -1rem;
+      right: -1rem;
+      font-family: var(--display);
+      font-size: 18vw;
+      color: var(--border);
+      line-height: 1;
+      user-select: none;
+      pointer-events: none;
+      letter-spacing: -.02em;
+    }
+
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: .2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 28px;
+      height: 2px;
+      background: var(--muted);
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(4rem, 10vw, 9rem);
+      line-height: .9;
+      letter-spacing: .04em;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero h1 .w-html { color: var(--accent-html); }
+    .hero h1 .w-css  { color: var(--accent-css);  }
+    .hero h1 .w-bs   { color: var(--accent-bs);   }
+    .hero h1 .w-js   { color: var(--accent-js);   }
+
+    .hero-bottom {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-top: 2.5rem;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-sub {
+      color: var(--muted);
+      font-size: .9rem;
+      font-family: var(--mono);
+      letter-spacing: .04em;
+      max-width: 340px;
+      line-height: 1.6;
+    }
+
+    .pill-row {
+      display: flex;
+      gap: .5rem;
+      flex-wrap: wrap;
+    }
+
+    .pill {
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .1em;
+      padding: .4rem 1rem;
+      border-radius: 2px;
+      border: 1.5px solid;
+      cursor: pointer;
+      transition: all .18s;
+      font-weight: 500;
+    }
+    .pill-html { border-color: var(--accent-html); color: var(--accent-html); background: var(--accent-html-light); }
+    .pill-html:hover { background: var(--accent-html); color: #fff; }
+    .pill-css  { border-color: var(--accent-css);  color: var(--accent-css);  background: var(--accent-css-light); }
+    .pill-css:hover  { background: var(--accent-css);  color: #fff; }
+    .pill-bs   { border-color: var(--accent-bs);   color: var(--accent-bs);   background: var(--accent-bs-light); }
+    .pill-bs:hover   { background: var(--accent-bs);   color: #fff; }
+    .pill-js   { border-color: var(--accent-js);   color: var(--accent-js);   background: var(--accent-js-light); }
+    .pill-js:hover   { background: var(--accent-js);   color: #fff; }
+
+    /* ── SEARCH ── */
+    .search-wrap {
+      max-width: 420px;
+      margin: 2rem 3rem 0;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--card);
+      border: 2px solid var(--border-dark);
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: .78rem;
+      padding: .7rem 1rem .7rem 2.8rem;
+      border-radius: 2px;
+      outline: none;
+      transition: border-color .2s;
+      letter-spacing: .04em;
+    }
+    .search-wrap input:focus { border-color: var(--text); }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute;
+      left: .9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    /* ── SECTION AREA ── */
+    .sections {
+      position: relative;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem 6rem;
+    }
+
+    .section-block {
+      display: none;
+      animation: fadeUp .35s ease both;
+    }
+    .section-block.active { display: block; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── OVERVIEW GRID ── */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 0;
+      border: 2px solid var(--text);
+      border-radius: 0;
+      overflow: hidden;
+      margin-bottom: 2.5rem;
+    }
+
+    .overview-card {
+      padding: 2.5rem 2rem;
+      cursor: pointer;
+      transition: transform .2s;
+      position: relative;
+      overflow: hidden;
+      border-right: 2px solid var(--text);
+    }
+    .overview-card:last-child { border-right: none; }
+    .overview-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .ov-html::before { background: var(--accent-html-light); }
+    .ov-css::before  { background: var(--accent-css-light); }
+    .ov-bs::before   { background: var(--accent-bs-light); }
+    .ov-js::before   { background: var(--accent-js-light); }
+    .overview-card:hover::before { opacity: 1; }
+
+    .ov-label {
+      font-family: var(--display);
+      font-size: 3.5rem;
+      letter-spacing: .06em;
+      line-height: 1;
+      margin-bottom: .6rem;
+      position: relative;
+      z-index: 1;
+    }
+    .ov-html .ov-label { color: var(--accent-html); }
+    .ov-css  .ov-label { color: var(--accent-css); }
+    .ov-bs   .ov-label { color: var(--accent-bs); }
+    .ov-js   .ov-label { color: var(--accent-js); }
+
+    .ov-name {
+      font-size: .85rem;
+      font-weight: 600;
+      margin-bottom: .2rem;
+      position: relative;
+      z-index: 1;
+      color: var(--text);
+    }
+    .ov-count {
+      font-family: var(--mono);
+      font-size: .63rem;
+      color: var(--muted);
+      position: relative;
+      z-index: 1;
+      letter-spacing: .06em;
+    }
+
+    .ov-arrow {
+      position: absolute;
+      bottom: 1.2rem; right: 1.5rem;
+      font-size: 1.5rem;
+      opacity: 0;
+      transition: opacity .2s, transform .2s;
+      z-index: 1;
+    }
+    .ov-html .ov-arrow { color: var(--accent-html); }
+    .ov-css  .ov-arrow { color: var(--accent-css); }
+    .ov-bs   .ov-arrow { color: var(--accent-bs); }
+    .ov-js   .ov-arrow { color: var(--accent-js); }
+    .overview-card:hover .ov-arrow { opacity: 1; transform: translateX(4px); }
+
+    /* ── SECTION HEADER ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1.2rem;
+      border-bottom: 2px solid var(--text);
+    }
+
+    .section-icon {
+      font-family: var(--display);
+      font-size: 1.4rem;
+      letter-spacing: .08em;
+      width: 56px;
+      height: 56px;
+      border-radius: 2px;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      border: 2px solid;
+    }
+    .icon-html { background: var(--accent-html-light); color: var(--accent-html); border-color: var(--accent-html); }
+    .icon-css  { background: var(--accent-css-light);  color: var(--accent-css);  border-color: var(--accent-css); }
+    .icon-bs   { background: var(--accent-bs-light);   color: var(--accent-bs);   border-color: var(--accent-bs); }
+    .icon-js   { background: var(--accent-js-light);   color: var(--accent-js);   border-color: var(--accent-js); }
+
+    .section-title {
+      font-family: var(--display);
+      font-size: 2.8rem;
+      letter-spacing: .06em;
+      line-height: 1;
+    }
+    .section-sub {
+      font-family: var(--mono);
+      font-size: .6rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-top: .2rem;
+    }
+
+    .topic-count {
+      font-family: var(--mono);
+      font-size: .62rem;
+      letter-spacing: .1em;
+      color: var(--muted);
+      margin-left: auto;
+      border: 1.5px solid var(--border-dark);
+      padding: .3rem .7rem;
+      border-radius: 2px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-wrap {
+      margin-bottom: 1.8rem;
+    }
+    .progress-label {
+      font-family: var(--mono);
+      font-size: .6rem;
+      color: var(--muted);
+      letter-spacing: .12em;
+      margin-bottom: .5rem;
+    }
+    .progress-bar {
+      height: 3px;
+      border-radius: 0;
+      background: var(--border);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      transition: width 1s cubic-bezier(.4,0,.2,1);
+    }
+    .fill-html { background: var(--accent-html); }
+    .fill-css  { background: var(--accent-css);  }
+    .fill-bs   { background: var(--accent-bs);   }
+    .fill-js   { background: var(--accent-js);   }
+
+    /* ── TOPICS GRID ── */
+    .topics-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 0;
+      border: 2px solid var(--text);
+      overflow: hidden;
+    }
+
+    .topic-card {
+      background: var(--card);
+      padding: 1rem 1.2rem;
+      cursor: pointer;
+      transition: background .12s;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      position: relative;
+    }
+
+    .topic-card:hover { background: var(--surface); }
+
+    .html-card:hover { border-left: 3px solid var(--accent-html); padding-left: calc(1.2rem - 2px); }
+    .css-card:hover  { border-left: 3px solid var(--accent-css);  padding-left: calc(1.2rem - 2px); }
+    .bs-card:hover   { border-left: 3px solid var(--accent-bs);   padding-left: calc(1.2rem - 2px); }
+    .js-card:hover   { border-left: 3px solid var(--accent-js);   padding-left: calc(1.2rem - 2px); }
+
+    .topic-num {
+      font-family: var(--mono);
+      font-size: .58rem;
+      color: var(--border-dark);
+      min-width: 22px;
+      letter-spacing: .04em;
+    }
+
+    .topic-name {
+      font-size: .83rem;
+      font-weight: 600;
+      flex: 1;
+      letter-spacing: -.01em;
+      line-height: 1.3;
+    }
+
+    .topic-tag {
+      font-family: var(--mono);
+      font-size: .5rem;
+      padding: .18rem .45rem;
+      border-radius: 2px;
+      letter-spacing: .08em;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .tag-basic    { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+    .tag-inter    { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+    .tag-advanced { background: #fce4ec; color: #c62828; border: 1px solid #f48fb1; }
+
+    .topic-card.hidden { display: none; }
+
+    .no-results {
+      text-align: center;
+      padding: 4rem;
+      font-family: var(--mono);
+      color: var(--muted);
+      font-size: .8rem;
+      display: none;
+      letter-spacing: .08em;
+    }
+
+    /* ── FOOTER NAV HINT ── */
+    .all-hint {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: .1em;
+      margin-top: 1.5rem;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 2px;
+      background: var(--text);
+      margin: 0 3rem;
+    }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 1rem; }
+      .nav-tabs li a { padding: 0 .6rem; font-size: .58rem; }
+      .hero { padding: 3rem 1.5rem 2.5rem; }
+      .hero-bg-text { display: none; }
+      .sections { padding: 1.5rem 1.5rem 4rem; }
+      .search-wrap { margin: 1.5rem 1.5rem 0; }
+      .overview-card { border-right: none; border-bottom: 2px solid var(--text); }
+      .overview-card:last-child { border-bottom: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">WEB<em>DEV</em></div>
+  <ul class="nav-tabs">
+    <li><a href="#" data-tab="all"  class="active">ALL</a></li>
+    <li><a href="#" data-tab="html">HTML</a></li>
+    <li><a href="#" data-tab="css" >CSS</a></li>
+    <li><a href="#" data-tab="bs"  >BOOTSTRAP</a></li>
+    <li><a href="#" data-tab="js"  >JAVASCRIPT</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg-text">DEV</div>
+  <p class="hero-eyebrow">Frontend Development Topics</p>
+  <h1>
+    <span class="w-html">HTML</span> &amp; <span class="w-css">CSS</span><br>
+    <span class="w-bs">Bootstrap</span> &amp; <span class="w-js">JS</span>
+  </h1>
+  <div class="hero-bottom">
+    <p class="hero-sub">// 143 topics across four core disciplines — everything you need to go from zero to frontend-ready.</p>
+    <div class="pill-row">
+      <span class="pill pill-html" onclick="switchTab('html')">HTML · 32</span>
+      <span class="pill pill-css"  onclick="switchTab('css')">CSS · 38</span>
+      <span class="pill pill-bs"   onclick="switchTab('bs')">Bootstrap · 28</span>
+      <span class="pill pill-js"   onclick="switchTab('js')">JavaScript · 45</span>
+    </div>
+  </div>
+</section>
+
+<div class="search-wrap">
+  <span class="search-icon">⌕</span>
+  <input type="text" id="searchInput" placeholder="Search any topic across all sections..." oninput="searchTopics(this.value)" />
+</div>
+
+<div class="divider" style="margin-top:2rem;"></div>
+
+<!-- SECTIONS -->
+<div class="sections">
+
+  <!-- ALL OVERVIEW -->
+  <div class="section-block active" id="tab-all">
+    <div class="overview-grid">
+      <div class="overview-card ov-html" onclick="switchTab('html')">
+        <div class="ov-label">HTML</div>
+        <div class="ov-name">HyperText Markup Language</div>
+        <div class="ov-count">32 TOPICS · STRUCTURE OF THE WEB</div>
+        <div class="ov-arrow">→</div>
+      </div>
+      <div class="overview-card ov-css" onclick="switchTab('css')">
+        <div class="ov-label">CSS</div>
+        <div class="ov-name">Cascading Style Sheets</div>
+        <div class="ov-count">38 TOPICS · STYLE & LAYOUT</div>
+        <div class="ov-arrow">→</div>
+      </div>
+      <div class="overview-card ov-bs" onclick="switchTab('bs')">
+        <div class="ov-label">BS5</div>
+        <div class="ov-name">Bootstrap 5 Framework</div>
+        <div class="ov-count">28 TOPICS · RAPID UI BUILDING</div>
+        <div class="ov-arrow">→</div>
+      </div>
+      <div class="overview-card ov-js" onclick="switchTab('js')">
+        <div class="ov-label">JS</div>
+        <div class="ov-name">JavaScript (ES6+)</div>
+        <div class="ov-count">45 TOPICS · LOGIC & INTERACTIVITY</div>
+        <div class="ov-arrow">→</div>
+      </div>
+    </div>
+    <p class="all-hint">↑ click a card or use the nav tabs to explore topics</p>
+  </div>
+
+  <!-- HTML -->
+  <div class="section-block" id="tab-html">
+    <div class="section-header">
+      <div class="section-icon icon-html">HTML</div>
+      <div>
+        <div class="section-title" style="color:var(--accent-html)">HTML</div>
+        <div class="section-sub">HYPERTEXT MARKUP LANGUAGE</div>
+      </div>
+      <div class="topic-count">32 TOPICS</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">TOPIC COVERAGE — BEGINNER TO ADVANCED</div>
+      <div class="progress-bar"><div class="progress-fill fill-html" data-width="100"></div></div>
+    </div>
+    <div class="topics-grid" id="html-grid"></div>
+    <div class="no-results" id="html-no">No topics match your search.</div>
+  </div>
+
+  <!-- CSS -->
+  <div class="section-block" id="tab-css">
+    <div class="section-header">
+      <div class="section-icon icon-css">CSS</div>
+      <div>
+        <div class="section-title" style="color:var(--accent-css)">CSS</div>
+        <div class="section-sub">CASCADING STYLE SHEETS</div>
+      </div>
+      <div class="topic-count">38 TOPICS</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">TOPIC COVERAGE — BEGINNER TO ADVANCED</div>
+      <div class="progress-bar"><div class="progress-fill fill-css" data-width="100"></div></div>
+    </div>
+    <div class="topics-grid" id="css-grid"></div>
+    <div class="no-results" id="css-no">No topics match your search.</div>
+  </div>
+
+  <!-- BOOTSTRAP -->
+  <div class="section-block" id="tab-bs">
+    <div class="section-header">
+      <div class="section-icon icon-bs">BS5</div>
+      <div>
+        <div class="section-title" style="color:var(--accent-bs)">Bootstrap 5</div>
+        <div class="section-sub">FRONTEND UI FRAMEWORK</div>
+      </div>
+      <div class="topic-count">28 TOPICS</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">TOPIC COVERAGE — BEGINNER TO ADVANCED</div>
+      <div class="progress-bar"><div class="progress-fill fill-bs" data-width="100"></div></div>
+    </div>
+    <div class="topics-grid" id="bs-grid"></div>
+    <div class="no-results" id="bs-no">No topics match your search.</div>
+  </div>
+
+  <!-- JS -->
+  <div class="section-block" id="tab-js">
+    <div class="section-header">
+      <div class="section-icon icon-js">JS</div>
+      <div>
+        <div class="section-title" style="color:var(--accent-js)">JavaScript</div>
+        <div class="section-sub">ECMASCRIPT / VANILLA JS</div>
+      </div>
+      <div class="topic-count">45 TOPICS</div>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-label">TOPIC COVERAGE — BEGINNER TO ADVANCED</div>
+      <div class="progress-bar"><div class="progress-fill fill-js" data-width="100"></div></div>
+    </div>
+    <div class="topics-grid" id="js-grid"></div>
+    <div class="no-results" id="js-no">No topics match your search.</div>
+  </div>
+
+</div>
+
+<script>
+const DATA = {
+  html: [
+    { name: "Introduction to HTML",          level: "basic"    },
+    { name: "HTML Document Structure",        level: "basic"    },
+    { name: "DOCTYPE Declaration",            level: "basic"    },
+    { name: "Head & Meta Tags",               level: "basic"    },
+    { name: "Headings (h1–h6)",               level: "basic"    },
+    { name: "Paragraphs & Line Breaks",       level: "basic"    },
+    { name: "Text Formatting Tags",           level: "basic"    },
+    { name: "Anchor Tags & Hyperlinks",       level: "basic"    },
+    { name: "Images & Alt Attribute",         level: "basic"    },
+    { name: "Ordered & Unordered Lists",      level: "basic"    },
+    { name: "Description Lists",              level: "basic"    },
+    { name: "Tables",                         level: "inter"    },
+    { name: "Table – colspan & rowspan",      level: "inter"    },
+    { name: "HTML Forms",                     level: "inter"    },
+    { name: "Input Types",                    level: "inter"    },
+    { name: "Form Validation Attributes",     level: "inter"    },
+    { name: "Select & Option Tags",           level: "inter"    },
+    { name: "Textarea & Button",              level: "inter"    },
+    { name: "Div & Span",                     level: "basic"    },
+    { name: "Semantic HTML5 Tags",            level: "inter"    },
+    { name: "Header, Footer, Nav, Main",      level: "inter"    },
+    { name: "Article, Section, Aside",        level: "inter"    },
+    { name: "Iframes",                        level: "inter"    },
+    { name: "Audio & Video Tags",             level: "inter"    },
+    { name: "HTML Entities",                  level: "basic"    },
+    { name: "Global Attributes",              level: "inter"    },
+    { name: "Data Attributes",                level: "inter"    },
+    { name: "HTML5 Canvas",                   level: "advanced" },
+    { name: "HTML5 SVG",                      level: "advanced" },
+    { name: "Accessibility (ARIA Roles)",     level: "advanced" },
+    { name: "SEO Meta Tags",                  level: "advanced" },
+    { name: "Responsive Meta Viewport",       level: "inter"    },
+  ],
+  css: [
+    { name: "Introduction to CSS",            level: "basic"    },
+    { name: "CSS Selectors",                  level: "basic"    },
+    { name: "Inline, Internal, External CSS", level: "basic"    },
+    { name: "Colors & Backgrounds",           level: "basic"    },
+    { name: "Typography & Fonts",             level: "basic"    },
+    { name: "Google Fonts",                   level: "basic"    },
+    { name: "Box Model",                      level: "basic"    },
+    { name: "Margin & Padding",               level: "basic"    },
+    { name: "Border & Outline",               level: "basic"    },
+    { name: "Width & Height",                 level: "basic"    },
+    { name: "Display Property",               level: "basic"    },
+    { name: "Position Property",              level: "inter"    },
+    { name: "Float & Clear",                  level: "inter"    },
+    { name: "Overflow",                       level: "inter"    },
+    { name: "Z-index & Stacking Context",     level: "inter"    },
+    { name: "Flexbox",                        level: "inter"    },
+    { name: "Flexbox – Align & Justify",      level: "inter"    },
+    { name: "CSS Grid",                       level: "inter"    },
+    { name: "Grid – Template Areas",          level: "inter"    },
+    { name: "Pseudo-classes",                 level: "inter"    },
+    { name: "Pseudo-elements",                level: "inter"    },
+    { name: "CSS Variables (Custom Props)",   level: "inter"    },
+    { name: "Media Queries",                  level: "inter"    },
+    { name: "Responsive Design",              level: "inter"    },
+    { name: "CSS Units (px, %, em, rem, vw)", level: "inter"    },
+    { name: "Transitions",                    level: "inter"    },
+    { name: "Animations & Keyframes",         level: "advanced" },
+    { name: "Transform (2D & 3D)",            level: "advanced" },
+    { name: "CSS Filters",                    level: "advanced" },
+    { name: "Clip-path & Masking",            level: "advanced" },
+    { name: "CSS Specificity & Cascade",      level: "advanced" },
+    { name: "CSS Preprocessors (SCSS/SASS)",  level: "advanced" },
+    { name: "CSS BEM Methodology",            level: "advanced" },
+    { name: "Dark Mode with CSS",             level: "advanced" },
+    { name: "Scroll Snap",                    level: "advanced" },
+    { name: "Aspect Ratio",                   level: "inter"    },
+    { name: "CSS Logical Properties",         level: "advanced" },
+    { name: "CSS Container Queries",          level: "advanced" },
+  ],
+  bs: [
+    { name: "Introduction to Bootstrap 5",   level: "basic"    },
+    { name: "CDN Setup & Installation",       level: "basic"    },
+    { name: "Bootstrap Grid System",          level: "basic"    },
+    { name: "Containers (fluid, sm, xl)",     level: "basic"    },
+    { name: "Rows & Columns",                 level: "basic"    },
+    { name: "Responsive Breakpoints",         level: "inter"    },
+    { name: "Typography Utilities",           level: "basic"    },
+    { name: "Color & Background Utilities",   level: "basic"    },
+    { name: "Spacing Utilities (m, p)",       level: "basic"    },
+    { name: "Flexbox Utilities",              level: "inter"    },
+    { name: "Display Utilities",              level: "inter"    },
+    { name: "Buttons & Button Groups",        level: "basic"    },
+    { name: "Navbar Component",               level: "inter"    },
+    { name: "Cards Component",                level: "inter"    },
+    { name: "Modal Component",                level: "inter"    },
+    { name: "Accordion Component",            level: "inter"    },
+    { name: "Carousel / Slider",              level: "inter"    },
+    { name: "Tabs & Pills",                   level: "inter"    },
+    { name: "Offcanvas",                      level: "inter"    },
+    { name: "Collapse",                       level: "inter"    },
+    { name: "Alerts & Toasts",                level: "basic"    },
+    { name: "Badges & Progress Bars",         level: "basic"    },
+    { name: "Forms & Input Groups",           level: "inter"    },
+    { name: "Form Validation",                level: "inter"    },
+    { name: "Pagination",                     level: "inter"    },
+    { name: "Breadcrumbs & List Groups",      level: "inter"    },
+    { name: "Tables (striped, hover)",        level: "inter"    },
+    { name: "Bootstrap Icons",                level: "advanced" },
+  ],
+  js: [
+    { name: "Introduction to JavaScript",     level: "basic"    },
+    { name: "Variables – var, let, const",    level: "basic"    },
+    { name: "Data Types",                     level: "basic"    },
+    { name: "Type Conversion & Coercion",     level: "basic"    },
+    { name: "Operators",                      level: "basic"    },
+    { name: "Conditional Statements",         level: "basic"    },
+    { name: "Switch Statement",               level: "basic"    },
+    { name: "Loops – for, while, do-while",   level: "basic"    },
+    { name: "for...of & for...in",            level: "inter"    },
+    { name: "Functions",                      level: "basic"    },
+    { name: "Arrow Functions",                level: "inter"    },
+    { name: "Scope – Global, Local, Block",   level: "inter"    },
+    { name: "Hoisting",                       level: "inter"    },
+    { name: "Closures",                       level: "inter"    },
+    { name: "Arrays & Array Methods",         level: "inter"    },
+    { name: "map, filter, reduce",            level: "inter"    },
+    { name: "Spread & Rest Operator",         level: "inter"    },
+    { name: "Destructuring",                  level: "inter"    },
+    { name: "Objects",                        level: "inter"    },
+    { name: "Object Methods",                 level: "inter"    },
+    { name: "this Keyword",                   level: "inter"    },
+    { name: "Prototype & Inheritance",        level: "advanced" },
+    { name: "Classes (ES6)",                  level: "advanced" },
+    { name: "Template Literals",              level: "inter"    },
+    { name: "Ternary Operator",               level: "basic"    },
+    { name: "Short-circuit Evaluation",       level: "inter"    },
+    { name: "DOM Selection",                  level: "inter"    },
+    { name: "DOM Manipulation",               level: "inter"    },
+    { name: "Event Listeners",                level: "inter"    },
+    { name: "Event Bubbling & Delegation",    level: "advanced" },
+    { name: "Forms & Form Events",            level: "inter"    },
+    { name: "localStorage & sessionStorage",  level: "inter"    },
+    { name: "JSON – parse & stringify",       level: "inter"    },
+    { name: "Fetch API",                      level: "advanced" },
+    { name: "Promises",                       level: "advanced" },
+    { name: "async / await",                  level: "advanced" },
+    { name: "Error Handling – try/catch",     level: "advanced" },
+    { name: "Modules – import/export",        level: "advanced" },
+    { name: "Regular Expressions",            level: "advanced" },
+    { name: "SetTimeout & SetInterval",       level: "inter"    },
+    { name: "Date & Math Objects",            level: "inter"    },
+    { name: "Callback Functions",             level: "inter"    },
+    { name: "Higher-Order Functions",         level: "advanced" },
+    { name: "Optional Chaining (?.) ",        level: "advanced" },
+    { name: "Nullish Coalescing (??)",        level: "advanced" },
+  ]
+};
+
+function levelTag(level) {
+  const map = { basic: 'BASIC', inter: 'INTER', advanced: 'ADV' };
+  return `<span class="topic-tag tag-${level}">${map[level]}</span>`;
+}
+
+function buildGrid(id, topics, cssClass) {
+  const grid = document.getElementById(id);
+  grid.innerHTML = topics.map((t, i) =>
+    `<div class="topic-card ${cssClass}" data-name="${t.name.toLowerCase()}">
+       <span class="topic-num">${String(i+1).padStart(2,'0')}</span>
+       <span class="topic-name">${t.name}</span>
+       ${levelTag(t.level)}
+     </div>`
+  ).join('');
+}
+
+buildGrid('html-grid', DATA.html, 'html-card');
+buildGrid('css-grid',  DATA.css,  'css-card');
+buildGrid('bs-grid',   DATA.bs,   'bs-card');
+buildGrid('js-grid',   DATA.js,   'js-card');
+
+let currentTab = 'all';
+
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.section-block').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-'+tab).classList.add('active');
+  document.querySelectorAll('.nav-tabs a').forEach(a => {
+    a.classList.toggle('active', a.dataset.tab === tab);
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.progress-fill').forEach(f => {
+      f.style.width = f.dataset.width + '%';
+    });
+  }, 80);
+  document.getElementById('searchInput').value = '';
+  searchTopics('');
+}
+
+document.querySelectorAll('.nav-tabs a').forEach(a => {
+  a.addEventListener('click', e => { e.preventDefault(); switchTab(a.dataset.tab); });
+});
+
+function searchTopics(q) {
+  q = q.toLowerCase().trim();
+  ['html','css','bs','js'].forEach(lang => {
+    const cards = document.querySelectorAll(`#${lang}-grid .topic-card`);
+    let visible = 0;
+    cards.forEach(c => {
+      const match = c.dataset.name.includes(q);
+      c.classList.toggle('hidden', !match);
+      if (match) visible++;
+    });
+    const noRes = document.getElementById(lang+'-no');
+    if (noRes) noRes.style.display = visible === 0 ? 'block' : 'none';
+  });
+  if (q && currentTab === 'all') {
+    for (const lang of ['html','css','bs','js']) {
+      const visible = [...document.querySelectorAll(`#${lang}-grid .topic-card`)].some(c => !c.classList.contains('hidden'));
+      if (visible) { switchTab(lang); break; }
+    }
+  }
+}
+</script>
+</body>
+</html>
